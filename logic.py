@@ -35,10 +35,26 @@ class Logic():
         self.func_dict = {
             '\r' : self.evaluate,
             'Ans' : self.get_sol,
+            'Canc' : self.canc,
+            '\x08' : self.canc,
+            'CE' : self.canc_all,
         }
 
+    def canc_all(self):
+        self.TOK_list = []
+        self.stream.set('')
+        self.sol = None
+
+    def canc(self):
+        if self.mode == 'D':
+            try:
+                num = len(self.TOK_list[-1])
+                self.TOK_list.pop()
+                self.stream.set(self.stream.get()[:-num])
+            except IndexError: pass
+
     def get_sol(self):
-        if self.sol is not None:self.is_num=True; self.update(self.sol)
+        if self.sol is not None:self.is_num=True; self.insert(self.sol)
 
     def look_dict(self,dict:dict,key):
         if dict.get(key) is not None:
@@ -63,11 +79,11 @@ class Logic():
             #     self.insert(self.default_dict[TOK])
 
     def callback(self,event:tk.Event|str):
-        if type(event) == tk.Event:
+        if isinstance(event,tk.Event):
             print(f'Pulsante: {repr(event.char)}')
             event = event.char
 
-        if type(event) == str:
+        if isinstance(event,str):
             if event.isdigit(): self.is_num = True; self.insert(event);return
             val = self.look_dict(self.func_dict,event)
             if val is not None:
@@ -78,7 +94,7 @@ class Logic():
 
     def evaluate(self):
         try:
-            self.sol = eval(''.join(str(x) for x in self.TOK_list))
+            self.sol = str(eval(''.join(str(x) for x in self.TOK_list)))
             self.stream.set(self.sol)
             self.TOK_list=[self.sol]
             self.flush = True

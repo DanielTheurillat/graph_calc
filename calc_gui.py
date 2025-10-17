@@ -56,8 +56,11 @@ class Calc(tk.Tk):
         self.but_div = tk.Button(frame, text='/', command=lambda: self.logic.callback('/'))
         self.but_div.grid(row=3,column=3,sticky='NSEW')
         self.but_ans = tk.Button(frame,text='Ans', command=lambda: self.logic.callback('Ans'))
-        self.but_ans.grid(row=3,column=4)
-        self.but_C = tk.Button(frame, text='C', command=lambda: self.logic.callback)
+        self.but_ans.grid(row=3,column=4, sticky='NSEW')
+        self.but_C = tk.Button(frame, text='C', command=lambda: self.logic.callback('Canc'))
+        self.but_C.grid(row=0,column=4, sticky='NSEW')
+        self.but_C_all = tk.Button(frame, text='CE', command=lambda: self.logic.callback('CE'))
+        self.but_C_all.grid(row=1,column=4,sticky='NSEW')
 
         self.bind('<Key>',self.logic.callback)
 
