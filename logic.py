@@ -38,8 +38,7 @@ class Logic():
         }
 
     def get_sol(self):
-        print(self.sol)
-        self.update(self.sol)
+        if self.sol is not None:self.is_num=True; self.update(self.sol)
 
     def look_dict(self,dict:dict,key):
         if dict.get(key) is not None:
@@ -48,10 +47,13 @@ class Logic():
             return None
 
     def insert(self,chars,*args):
-        if self.flush: self.stream.set('');self.TOK_list=[];self.flush=False
+        if self.flush: 
+            if self.is_num: self.stream.set('');self.TOK_list=[]
+            self.flush=False
         if chars is not None:
             self.TOK_list.append(chars)
             self.stream.set(self.stream.get()+str(chars))
+        self.is_num = False
 
     def update(self,TOK):
         TOK = str(TOK)
@@ -63,12 +65,10 @@ class Logic():
     def callback(self,event:tk.Event|str):
         if type(event) == tk.Event:
             print(f'Pulsante: {repr(event.char)}')
-            val = self.look_dict(self.func_dict,event.char)
-            if val is not None:
-                val()
-                return
-            self.update(event.char)
-        elif type(event) == str:
+            event = event.char
+
+        if type(event) == str:
+            if event.isdigit(): self.is_num = True; self.insert(event);return
             val = self.look_dict(self.func_dict,event)
             if val is not None:
                 val()
@@ -81,6 +81,7 @@ class Logic():
             self.sol = eval(''.join(str(x) for x in self.TOK_list))
             self.stream.set(self.sol)
             self.TOK_list=[self.sol]
+            self.flush = True
         except (SyntaxError, NameError, TypeError, ZeroDivisionError):
             self.stream.set('Errore')
             self.sol = None
